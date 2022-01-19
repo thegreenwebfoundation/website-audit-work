@@ -59,6 +59,32 @@ class PageAnalyzer {
       return;
     }
   }
+  /**
+   * @param  {LighthouseResultObject} lighthouseResult
+   *
+   * Accept a Lighthouse Result, and pull out the total transfer,
+   * broken down by file type.
+   *
+   */
+  analyseTransfer(lighthouseResult) {
+    const items = lighthouseResult.audits['network-requests'].details.items
+
+    function breakdownByType(transferByType, item) {
+
+      if (transferByType[item.resourceType]) {
+        transferByType[item.resourceType] += item.transferSize
+      } else {
+        transferByType[item.resourceType] = item.transferSize
+      }
+      return transferByType
+
+    }
+    const transferByType = items.reduce(breakdownByType, {})
+
+    return transferByType
+
+  }
+
 }
 
 module.exports = PageAnalyzer;
