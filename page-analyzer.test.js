@@ -27,8 +27,6 @@ test('strip out webarchive page furniture when needed', () => {
   const transferByType = analyzer.analyseTransfer(result)
   const skipWebArchive = true
   const transferByTypeFiltered = analyzer.analyseTransfer(result, skipWebArchive)
-  console.log(transferByType)
-  console.log(transferByTypeFiltered)
 
   const fileTypes = [
     "Document",
@@ -49,23 +47,3 @@ test('strip out webarchive page furniture when needed', () => {
 });
 
 
-// // {
-// //   Document: 25100,
-// //   Script: 639582,
-// //   Stylesheet: 79126,
-// //   undefined: 39307,
-// //   Image: 17279092,
-// //   XHR: 28953,
-// //   Font: 134522,
-// //   Ping: 251
-// // }
-
-// {
-//   Document: 25100,
-//     undefined: 39307,
-//       Script: 586927,
-//         Stylesheet: 72112,
-//           XHR: 27807,
-//             Image: 17272209,
-//               Font: 106283
-// }
