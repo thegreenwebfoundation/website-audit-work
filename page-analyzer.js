@@ -66,10 +66,17 @@ class PageAnalyzer {
    * broken down by file type.
    *
    */
-  analyseTransfer(lighthouseResult) {
+  analyseTransfer(lighthouseResult, skipWebArchive) {
     const items = lighthouseResult.audits['network-requests'].details.items
 
     function breakdownByType(transferByType, item) {
+
+      // return early to skip counting web archive page furniture
+      // all urls from the original capture begin with the string below
+      const telltaleWebArchiveCapturePath = "web.archive.org/web"
+      if (!item.url.includes(telltaleWebArchiveCapturePath) && skipWebArchive) {
+        return transferByType
+      }
 
       if (transferByType[item.resourceType]) {
         transferByType[item.resourceType] += item.transferSize
@@ -77,12 +84,8 @@ class PageAnalyzer {
         transferByType[item.resourceType] = item.transferSize
       }
       return transferByType
-
     }
-    const transferByType = items.reduce(breakdownByType, {})
-
-    return transferByType
-
+    return items.reduce(breakdownByType, {})
   }
 
 }
