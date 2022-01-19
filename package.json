@@ -1,0 +1,16 @@
+{
+  "name": "eui-website-audit-work",
+  "version": "1.0.0",
+  "description": "A pacakge to audit sites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parse": "^5.0.4",
+    "lighthouse": "^9.2.0",
+    "slugify": "^1.6.5"
+  }
+}

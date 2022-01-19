@@ -1,0 +1,11 @@
+cruft
+logs
+node_modules
+
+# do not track generate lighthouse runs
+lh-runs
+
+# do not track input data
+input-data
+
+.DS_store
