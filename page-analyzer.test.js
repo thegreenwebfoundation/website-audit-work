@@ -1,6 +1,7 @@
+const fs = require('fs')
 const { parse } = require('csv-parse/sync');
 
-const { buildCSVofComparablePages } = require("./lh-check-urls")
+const { buildCSVofComparablePages, writeCSVofComparablePages } = require("./lh-check-urls")
 const PageAnalyzer = require("./page-analyzer");
 const analyzer = new PageAnalyzer();
 
@@ -64,7 +65,7 @@ test("generate data structure for comparing transfer for pages", () => {
   }
 })
 
-test.only("rebuild datastructure for matching pages", () => {
+test("rebuild datastructure for matching pages", () => {
   // here we iterate through our main key files, and then recombine them
   // data structure we can turn into a CSV to support comparisons
   const pathToCSV = './input-data/website-check-urls.csv'
@@ -103,3 +104,40 @@ test.only("rebuild datastructure for matching pages", () => {
     expect(generatedPages).toContain(page)
   }
 })
+
+describe("writing to files", () => {
+  beforeAll(() => {
+    const outputPath = "test.output.csv"
+    fs.unlinkSync(outputPath)
+  })
+  test("write CSV datastructure for matching pages to file", () => {
+    const pathToCSV = './input-data/website-check-urls.csv'
+    const outputPath = "test.output.csv"
+    writeCSVofComparablePages(pathToCSV, outputPath);
+
+    // is there a CSV file at the location?
+    const CSVcontents = fs.readFileSync(outputPath)
+    const parsedOutput = parse(CSVcontents)
+    // is this an array of row like objects?
+    expect(parsedOutput.length).toBeGreaterThan(0)
+
+    const headerRow = parsedOutput[0]
+
+    // do we have our columns?
+    const cols = [
+      'Document',
+      'Script',
+      'Stylesheet',
+      'Image',
+      'Font',
+      'XHR',
+      'Name',
+      'PageName',
+    ]
+    for (const col of cols) {
+      expect(headerRow).toContain(col)
+    }
+  })
+
+})
+

@@ -62,6 +62,11 @@ async function runLighthouseforPage(siteObject) {
   }
 }
 
+function writeCSVofComparablePages(inputCSVPath, outputCSVPath) {
+  const csvString = buildCSVofComparablePages(inputCSVPath)
+  fs.writeFileSync(outputCSVPath, csvString)
+  return csvString
+}
 
 function buildCSVofComparablePages(pathToCSV) {
 
@@ -112,5 +117,6 @@ const pathToCSV = "./input-data/website-check-urls.csv";
 // buildCSVofComparablePages(pathToCSV)
 
 module.exports = {
-  buildCSVofComparablePages
+  buildCSVofComparablePages,
+  writeCSVofComparablePages
 }
