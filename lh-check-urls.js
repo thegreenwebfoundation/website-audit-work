@@ -2,7 +2,8 @@ const fs = require("fs");
 const { URL } = require("url");
 
 const slugify = require("slugify");
-const { parse } = require("csv-parse/sync");
+const { parse } = require('csv-parse/sync');
+const { stringify } = require('csv-stringify/sync');
 
 const PageAnalyzer = require("./page-analyzer");
 const analyzer = new PageAnalyzer();
@@ -61,6 +62,55 @@ async function runLighthouseforPage(siteObject) {
   }
 }
 
-const pathToCSV = "./website-check-urls.csv";
 
-parseCSVAndcheckUrls(pathToCSV);
+function buildCSVofComparablePages(pathToCSV) {
+
+  const csvContents = fs.readFileSync(pathToCSV);
+  const parsed = parse(csvContents,
+    {
+      columns: true
+    }
+  );
+  // list our page names
+  const pageNames = parsed.map((row) => { return slugify(row.name).toLowerCase() })
+
+  const rows = []
+  for (const name of pageNames) {
+    // console.log({ name })
+    const pageVariants = analyzer.loadTransferForPageVariants(name)
+    // console.log({ pageVariants })
+    for (const variant of pageVariants) {
+      variant.PageName = name
+      rows.push(variant)
+    }
+  }
+
+
+  return stringify(rows, {
+    header: true,
+  })
+
+}
+
+// for each json file for page, find the variants we captured
+
+// then for each variant write the page name, the variant, and transfer,
+// broken down by file type
+
+
+
+
+// We want to show the each page, grouped by the key amounts, comparing the old version with the new version, as this allows us to compare what we have, compared to the counter factual as if nothing had changed
+
+
+
+
+
+const pathToCSV = "./input-data/website-check-urls.csv";
+
+// parseCSVAndcheckUrls(pathToCSV);
+// buildCSVofComparablePages(pathToCSV)
+
+module.exports = {
+  buildCSVofComparablePages
+}

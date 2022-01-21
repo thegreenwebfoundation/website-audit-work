@@ -53,12 +53,37 @@ class PageAnalyzer {
    */
   loadReport(pathToReportJSON) {
     try {
-      return (report = require(pathToReportJSON));
+      const contents = fs.readFileSync(pathToReportJSON)
+      const report = JSON.parse(contents)
+      return report
     } catch (error) {
       console.error(`no parseable file found at ${pathToReportJSON}`);
       return;
     }
   }
+
+  loadTransferForPageVariants(pageName) {
+
+    const files = fs.readdirSync('./lh-runs/');
+    const matchingRuns = this.lighthouseRunsForName(files, pageName)
+    const rows = []
+
+    for (const runFile of matchingRuns) {
+
+      const loadPath = `./lh-runs/${runFile}`
+
+      if (fs.statSync(loadPath)) {
+        const result = this.loadReport(loadPath)
+        const transfer = this.analyseTransfer(result)
+        const variant = runFile.replace(`${pageName}-`, "").replace('.json', '')
+        transfer.Name = variant
+        rows.push(transfer)
+      }
+    }
+    return rows
+  }
+
+
   /**
    * @param  {LighthouseResultObject} lighthouseResult
    *
@@ -70,6 +95,21 @@ class PageAnalyzer {
     const items = lighthouseResult.audits['network-requests'].details.items
 
     function breakdownByType(transferByType, item) {
+
+
+      const fileTypes = [
+        "Document",
+        "Script",
+        "Stylesheet",
+        "Image",
+        "XHR",
+        "Font",
+      ]
+
+      // reject resource types we aren't interested in
+      if (!fileTypes.includes(item.resourceType)) {
+        return transferByType
+      }
 
       // return early to skip counting web archive page furniture
       // all urls from the original capture begin with the string below
@@ -87,7 +127,18 @@ class PageAnalyzer {
     }
     return items.reduce(breakdownByType, {})
   }
-
+  /**
+   * @param  {string} files - a set of file names from listing the
+   * contents of a directory
+   * @param  {string} fileName - file name to search for matching runs for
+   *
+   * Return the matching json files from the list that match the string fileName
+   */
+  lighthouseRunsForName(files, fileName) {
+    return files
+      .filter((file) => file.startsWith(fileName))
+      .filter((file) => file.match('.json'))
+  }
 }
 
 module.exports = PageAnalyzer;

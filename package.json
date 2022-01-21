@@ -4,12 +4,12 @@
   "description": "A package to hold common code for audit tasks",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "csv-parse": "^5.0.4",
+    "csv": "^6.0.5",
     "jest": "^27.4.7",
     "lighthouse": "^9.2.0",
     "slugify": "^1.6.5"
